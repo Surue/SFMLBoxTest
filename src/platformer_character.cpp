@@ -20,6 +20,7 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	box_shape.SetAsBox(
 		pixel2meter(size.x) / 2.f, pixel2meter(size.y) / 2.f);
 	box.shape = &box_shape;
+	box.friction = 0.f;
 
 	b2FixtureDef foot;
 	b2PolygonShape foot_shape;
@@ -42,11 +43,14 @@ PlatformerCharacter::~PlatformerCharacter()
 {
 }
 
-void PlatformerCharacter::update(float move, bool jump)
+void PlatformerCharacter::update(float move_axis, bool jump_button)
 {
 	//manage movements
-	body->SetLinearVelocity(b2Vec2(walk_speed*move, body->GetLinearVelocity().y));
-
+	body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
+	if (foot > 0 && jump_button)
+	{
+		body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, -jump_speed));
+	}
 	center_position = meter2pixel(body->GetPosition());
 	rect.setPosition(center_position - size / 2.f);
 }
@@ -58,12 +62,10 @@ void PlatformerCharacter::draw(sf::RenderWindow& window)
 
 void PlatformerCharacter::touch_ground()
 {
-	std::cout << "TOUCH GROUND\n";
 	foot++;
 }
 
 void PlatformerCharacter::leave_ground()
 {
-	std::cout << "LEAVE GROUND\n";
 	foot--;
 }

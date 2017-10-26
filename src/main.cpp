@@ -25,7 +25,6 @@ class MyContactListener : public b2ContactListener
 {
 	void BeginContact(b2Contact* contact) 
 	{
-		std::cout << "CONTACT \n";
 		PlatformerCharacter* pChar = nullptr;
 		Platform* platform = nullptr;
 		if (contact->GetFixtureA()->GetUserData() != NULL)
@@ -42,16 +41,6 @@ class MyContactListener : public b2ContactListener
 		{
 			pChar->touch_ground();
 		}
-
-		//check if fixture A was a ball
-		/*void* bodyUserData = contact->GetFixtureA()->GetBody()->GetUserData();
-		if (bodyUserData)
-			static_cast<Platform*>(bodyUserData)->startContact();
-
-		//check if fixture B was a ball
-		bodyUserData = contact->GetFixtureB()->GetBody()->GetUserData();
-		if (bodyUserData)
-			static_cast<Platform*>(bodyUserData)->startContact();*/
 
 	}
 
@@ -102,29 +91,40 @@ int main()
 		Platform(myWorld, sf::Vector2f(400.f,0.f)),
 		Platform(myWorld, sf::Vector2f(0.f,300.f), sf::Vector2f(100.f,600.f)),
 		Platform(myWorld, sf::Vector2f(800.f,300.f), sf::Vector2f(100.f,600.f)),
+		Platform(myWorld, sf::Vector2f(150.f,200.f), sf::Vector2f(200.f,50.f)),
+		Platform(myWorld, sf::Vector2f(650.f,400.f), sf::Vector2f(200.f,50.f)),
 	};
 	
 	while (window.isOpen())
 	{
-
-		float move = 0.0f;
+		bool jump_button = false;
+		float move_axis = 0.0f;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
-			move -= 1.0f;
+			move_axis -= 1.0f;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		{
-			move += 1.0f;
+			move_axis += 1.0f;
 		}
 		myWorld.Step(timeStep, velocityIterations, positionIterations);
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+			}
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::Space)
+				{
+					jump_button = true;
+				}
+			}
 		}
 		
-		character.update(move);
+		character.update(move_axis, jump_button);
 		
 		window.clear();
 		character.draw(window);
