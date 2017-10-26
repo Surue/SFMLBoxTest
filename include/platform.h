@@ -19,6 +19,8 @@ private:
 	sf::RectangleShape rect;
 	sf::Vector2f center_position;
 	sf::Vector2f size;
+
+	ContactData contactData;
 };
 
 

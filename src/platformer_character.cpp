@@ -1,4 +1,5 @@
 #include <platformer_character.h>
+#include <iostream>
 
 PlatformerCharacter::PlatformerCharacter(b2World & world)
 {
@@ -16,17 +17,32 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	//Create the fixtures
 	b2FixtureDef box;
 	b2PolygonShape box_shape;
-	box_shape.SetAsBox(pixel2meter(size.x) / 2.f, pixel2meter(size.y) / 2.f);
+	box_shape.SetAsBox(
+		pixel2meter(size.x) / 2.f, pixel2meter(size.y) / 2.f);
 	box.shape = &box_shape;
 
+	b2FixtureDef foot;
+	b2PolygonShape foot_shape;
+	foot.isSensor = true;
+	foot_shape.SetAsBox(
+		pixel2meter(size.x-4.f) / 2.f, pixel2meter(2.0f) / 2.f,
+		b2Vec2(0.f, pixel2meter(size.y)/2), 
+		0.f);
+	foot.shape = &foot_shape;
+	contactData.contactDataType = ContactDataType::PLATFORM_CHARACTER;
+	contactData.data = this;
+	foot.userData = &contactData;
+
+
 	body->CreateFixture(&box);
+	body->CreateFixture(&foot);
 }
 
 PlatformerCharacter::~PlatformerCharacter()
 {
 }
 
-void PlatformerCharacter::update(float move)
+void PlatformerCharacter::update(float move, bool jump)
 {
 	//manage movements
 	body->SetLinearVelocity(b2Vec2(walk_speed*move, body->GetLinearVelocity().y));
@@ -38,4 +54,16 @@ void PlatformerCharacter::update(float move)
 void PlatformerCharacter::draw(sf::RenderWindow& window)
 {
 	window.draw(rect);
+}
+
+void PlatformerCharacter::touch_ground()
+{
+	std::cout << "TOUCH GROUND\n";
+	foot++;
+}
+
+void PlatformerCharacter::leave_ground()
+{
+	std::cout << "LEAVE GROUND\n";
+	foot--;
 }
