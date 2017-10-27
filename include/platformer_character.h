@@ -16,6 +16,7 @@ public:
 	void leave_ground(bool);
 private:
 	int foot = 0;
+	int wallJumping_speed = 10000;
 	b2Body* body;
 	sf::RectangleShape rect;
 	sf::Vector2f center_position = sf::Vector2f(400.f, 300.f);

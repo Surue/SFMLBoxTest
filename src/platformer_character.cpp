@@ -46,7 +46,7 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	contactDataWall.data = this;
 	side_sensor.friction = 0.005f;
 	side_sensor.userData = &contactDataWall;
-	
+
 
 	body->CreateFixture(&box);
 	body->CreateFixture(&foot);
@@ -60,36 +60,40 @@ PlatformerCharacter::~PlatformerCharacter()
 void PlatformerCharacter::update(bool jump_button, bool isWalled)
 {
 
+	/* manage movements */
 	float move_axis = 0.0f;
-	//manage if it's a wall jump
-	//manage movements
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		move_axis -= 1.0f;
-	}
-	if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		body->SetLinearVelocity(b2Vec2(-jump_speed*(move_axis*60), body->GetLinearVelocity().y));
-		std::cout << "WALL JUMP\n";
-	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
 		move_axis += 1.0f;
 	}
-
-	if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		body->SetLinearVelocity(b2Vec2(-jump_speed*move_axis, body->GetLinearVelocity().y));
+		move_axis -= 1.0f;
+	}
+
+	body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
+
+	/* manage wall jumps */
+	if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		body->ApplyForce(b2Vec2(wallJumping_speed, 0), body->GetWorldCenter(), true);
 		std::cout << "WALL JUMP\n";
 	}
 
-	//manage jumps
+	if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		body->ApplyForce(b2Vec2(-wallJumping_speed, 0), body->GetWorldCenter(), true);
+		std::cout << "WALL JUMP\n";
+	}
+
+
+	/* manage jumps */
 	if (foot > 0 && jump_button)
 	{
 		body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, -jump_speed));
 	}
 
-	body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
 	center_position = meter2pixel(body->GetPosition());
 	rect.setPosition(center_position - size / 2.f);
 }

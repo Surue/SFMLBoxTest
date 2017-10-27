@@ -49,7 +49,6 @@ class MyContactListener : public b2ContactListener
 		{
 			pChar->touch_ground(isWalled);
 		}
-
 	}
 
 	void EndContact(b2Contact* contact) {
@@ -67,6 +66,10 @@ class MyContactListener : public b2ContactListener
 		if (platform != nullptr && pChar != nullptr)
 		{
 			pChar->leave_ground(isWalled);
+			if (isWalled)
+			{
+				isWalled = false;
+			}
 		}
 	}
 };
