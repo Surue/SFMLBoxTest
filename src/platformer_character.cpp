@@ -25,7 +25,7 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	//Create foot sensor
 	b2FixtureDef foot;
 	b2PolygonShape foot_shape;
-	//foot.isSensor = true;
+	foot.isSensor = true;
 	foot_shape.SetAsBox(
 		pixel2meter(size.x - 4.f) / 2.f, pixel2meter(2.0f) / 2.f,
 		b2Vec2(0.f, pixel2meter(size.y) / 2),
@@ -37,12 +37,10 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 
 	//Create side sensor
 	b2FixtureDef side_sensor;
+	side_sensor.isSensor = true;
 	std::cout << "size.x = " << size.x << "\n";
 	b2PolygonShape side_shape;
-	side_shape.SetAsBox(
-		pixel2meter(size.x) / 2.f, pixel2meter(1.0f) / 2.f,
-		b2Vec2(0, 0),
-		0.f);
+	side_shape.SetAsBox(pixel2meter(size.x) / 2.f, pixel2meter(1.0f) / 2.f);
 	side_sensor.shape = &side_shape;
 	contactDataWall.contactDataType = ContactDataType::WALL_CHARACTER;
 	contactDataWall.data = this;
@@ -101,20 +99,26 @@ void PlatformerCharacter::draw(sf::RenderWindow& window)
 
 void PlatformerCharacter::touch_ground(bool isWalled)
 {
+<<<<<<< HEAD
 	if (isWalled)
 	{
 		std::cout << "WALL\n";
 	}
 	std::cout << "Touch ground\n";
+=======
+>>>>>>> 50f60de62554376002733f12f8e1956379d14bf6
 	foot++;
 }
 
 void PlatformerCharacter::leave_ground(bool isWalled)
 {
+<<<<<<< HEAD
 	if (isWalled)
 	{
 		std::cout << "WALL\n";
 	}
 	std::cout << "Leave ground\n";
+=======
+>>>>>>> 50f60de62554376002733f12f8e1956379d14bf6
 	foot--;
 }

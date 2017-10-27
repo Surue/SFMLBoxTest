@@ -10,10 +10,10 @@ class PlatformerCharacter
 public:
 	PlatformerCharacter(b2World&);
 	~PlatformerCharacter();
-	void update(float move_axis, bool jump_button);
+	void update(bool jump_button, bool isWalled);
 	void draw(sf::RenderWindow&);
-	void touch_ground();
-	void leave_ground();
+	void touch_ground(bool);
+	void leave_ground(bool);
 private:
 	int foot = 0;
 	b2Body* body;
