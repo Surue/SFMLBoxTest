@@ -7,8 +7,11 @@
 
 #include <Box2D/Box2D.h>
 
+//check if the character is on a wall or a platform
+bool isWalled = false;
 void CheckUserData(void* userData, PlatformerCharacter** pCharPtr, Platform** platformPtr)
 {
+
 	ContactData* data = static_cast<ContactData*>(userData);
 	switch (data->contactDataType)
 	{
@@ -20,8 +23,8 @@ void CheckUserData(void* userData, PlatformerCharacter** pCharPtr, Platform** pl
 		break;
 
 	case ContactDataType::WALL_CHARACTER:
-		std::cout << "WALL\n";
 		*pCharPtr = static_cast<PlatformerCharacter*>(data->data);
+		isWalled = true;
 		break;
 	}
 }
@@ -44,7 +47,7 @@ class MyContactListener : public b2ContactListener
 		}
 		if (platform != nullptr && pChar != nullptr)
 		{
-			pChar->touch_ground();
+			pChar->touch_ground(isWalled);
 		}
 
 	}
@@ -63,7 +66,7 @@ class MyContactListener : public b2ContactListener
 		}
 		if (platform != nullptr && pChar != nullptr)
 		{
-			pChar->leave_ground();
+			pChar->leave_ground(isWalled);
 		}
 	}
 };
@@ -103,15 +106,7 @@ int main()
 	while (window.isOpen())
 	{
 		bool jump_button = false;
-		float move_axis = 0.0f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		{
-			move_axis -= 1.0f;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-			move_axis += 1.0f;
-		}
+
 		myWorld.Step(timeStep, velocityIterations, positionIterations);
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -129,7 +124,7 @@ int main()
 			}
 		}
 		
-		character.update(move_axis, jump_button);
+		character.update(jump_button, isWalled);
 		
 		window.clear();
 		character.draw(window);

@@ -59,14 +59,37 @@ PlatformerCharacter::~PlatformerCharacter()
 {
 }
 
-void PlatformerCharacter::update(float move_axis, bool jump_button)
+void PlatformerCharacter::update(bool jump_button, bool isWalled)
 {
+
+	float move_axis = 0.0f;
+	//manage if it's a wall jump
 	//manage movements
-	body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		move_axis -= 1.0f;
+	}
+	else if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		body->SetLinearVelocity(b2Vec2(-jump_speed*(move_axis*60), body->GetLinearVelocity().y));
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		move_axis += 1.0f;
+	}
+
+	else if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		body->SetLinearVelocity(b2Vec2(-jump_speed*move_axis, body->GetLinearVelocity().y));
+	}
+
+	//manage jumps
 	if (foot > 0 && jump_button)
 	{
 		body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, -jump_speed));
 	}
+
+	body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
 	center_position = meter2pixel(body->GetPosition());
 	rect.setPosition(center_position - size / 2.f);
 }
@@ -76,14 +99,22 @@ void PlatformerCharacter::draw(sf::RenderWindow& window)
 	window.draw(rect);
 }
 
-void PlatformerCharacter::touch_ground()
+void PlatformerCharacter::touch_ground(bool isWalled)
 {
+	if (isWalled)
+	{
+		std::cout << "WALL\n";
+	}
 	std::cout << "Touch ground\n";
 	foot++;
 }
 
-void PlatformerCharacter::leave_ground()
+void PlatformerCharacter::leave_ground(bool isWalled)
 {
+	if (isWalled)
+	{
+		std::cout << "WALL\n";
+	}
 	std::cout << "Leave ground\n";
 	foot--;
 }
