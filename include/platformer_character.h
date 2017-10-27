@@ -23,6 +23,7 @@ private:
 	const float walk_speed = 5.0f;
 	const float jump_speed = 10.f;
 	ContactData contactData;
+	ContactData contactDataWall;
 };
 
 #endif // !PLATFORMER_CHAR_H

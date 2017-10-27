@@ -18,6 +18,11 @@ void CheckUserData(void* userData, PlatformerCharacter** pCharPtr, Platform** pl
 	case ContactDataType::PLATFORM_CHARACTER:
 		*pCharPtr = static_cast<PlatformerCharacter*>(data->data);
 		break;
+
+	case ContactDataType::WALL_CHARACTER:
+		std::cout << "WALL\n";
+		*pCharPtr = static_cast<PlatformerCharacter*>(data->data);
+		break;
 	}
 }
 

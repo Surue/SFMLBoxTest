@@ -20,23 +20,39 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	box_shape.SetAsBox(
 		pixel2meter(size.x) / 2.f, pixel2meter(size.y) / 2.f);
 	box.shape = &box_shape;
-	box.friction = 0.f;
+	box.friction = 0.00f;
 
+	//Create foot sensor
 	b2FixtureDef foot;
 	b2PolygonShape foot_shape;
-	foot.isSensor = true;
+	//foot.isSensor = true;
 	foot_shape.SetAsBox(
-		pixel2meter(size.x-4.f) / 2.f, pixel2meter(2.0f) / 2.f,
-		b2Vec2(0.f, pixel2meter(size.y)/2), 
+		pixel2meter(size.x - 4.f) / 2.f, pixel2meter(2.0f) / 2.f,
+		b2Vec2(0.f, pixel2meter(size.y) / 2),
 		0.f);
 	foot.shape = &foot_shape;
 	contactData.contactDataType = ContactDataType::PLATFORM_CHARACTER;
 	contactData.data = this;
 	foot.userData = &contactData;
 
+	//Create side sensor
+	b2FixtureDef side_sensor;
+	std::cout << "size.x = " << size.x << "\n";
+	b2PolygonShape side_shape;
+	side_shape.SetAsBox(
+		pixel2meter(size.x) / 2.f, pixel2meter(1.0f) / 2.f,
+		b2Vec2(0, 0),
+		0.f);
+	side_sensor.shape = &side_shape;
+	contactDataWall.contactDataType = ContactDataType::WALL_CHARACTER;
+	contactDataWall.data = this;
+	side_sensor.friction = 0.005f;
+	side_sensor.userData = &contactDataWall;
+	
 
 	body->CreateFixture(&box);
 	body->CreateFixture(&foot);
+	body->CreateFixture(&side_sensor);
 }
 
 PlatformerCharacter::~PlatformerCharacter()
@@ -62,10 +78,12 @@ void PlatformerCharacter::draw(sf::RenderWindow& window)
 
 void PlatformerCharacter::touch_ground()
 {
+	std::cout << "Touch ground\n";
 	foot++;
 }
 
 void PlatformerCharacter::leave_ground()
 {
+	std::cout << "Leave ground\n";
 	foot--;
 }

@@ -15,6 +15,7 @@ sf::Vector2f meter2pixel(b2Vec2 meters);
 enum class ContactDataType
 {
 	PLATFORM_CHARACTER,
+	WALL_CHARACTER,
 	PLATFORM
 };
 
