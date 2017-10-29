@@ -40,7 +40,7 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	side_sensor.isSensor = true;
 	std::cout << "size.x = " << size.x << "\n";
 	b2PolygonShape side_shape;
-	side_shape.SetAsBox(pixel2meter(size.x) / 2.f, pixel2meter(1.0f) / 2.f);
+	side_shape.SetAsBox(pixel2meter(size.x) / 1.8f, pixel2meter(1.0f) / 2.f);
 	side_sensor.shape = &side_shape;
 	contactDataWall.contactDataType = ContactDataType::WALL_CHARACTER;
 	contactDataWall.data = this;
@@ -57,7 +57,7 @@ PlatformerCharacter::~PlatformerCharacter()
 {
 }
 
-void PlatformerCharacter::update(bool jump_button, bool isWalled)
+void PlatformerCharacter::update(bool jump_button)
 {
 
 	/* manage movements */
@@ -74,22 +74,22 @@ void PlatformerCharacter::update(bool jump_button, bool isWalled)
 
 	body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
 
-	/* manage wall jumps */
-	if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	/* manage vertical mouvements if on the wall */
+	if (isWalled 
+		&& !jump_button 
+		&& (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)))
 	{
-		body->ApplyForce(b2Vec2(wallJumping_speed, 0), body->GetWorldCenter(), true);
-		std::cout << "WALL JUMP\n";
+		if (body->GetLinearVelocity().y > 0) {
+			body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, 0.01f));
+		}
+		else 
+		{
+			body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, body->GetLinearVelocity().y / 1.1f));
+		}
 	}
 
-	if (foot > 0 && jump_button && isWalled && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-		body->ApplyForce(b2Vec2(-wallJumping_speed, 0), body->GetWorldCenter(), true);
-		std::cout << "WALL JUMP\n";
-	}
-
-
-	/* manage jumps */
-	if (foot > 0 && jump_button)
+	/* manage jumps*/
+	if (jump_button && foot > 0)
 	{
 		body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, -jump_speed));
 	}
@@ -107,7 +107,11 @@ void PlatformerCharacter::touch_ground(bool isWalled)
 {
 	if (isWalled)
 	{
-		std::cout << "WALL\n";
+		this->isWalled = isWalled;
+	}
+	else
+	{
+		this->isWalled = isWalled;
 	}
 	std::cout << "Touch ground\n";
 	foot++;
@@ -117,7 +121,11 @@ void PlatformerCharacter::leave_ground(bool isWalled)
 {
 	if (isWalled)
 	{
-		std::cout << "WALL\n";
+		this->isWalled = isWalled;
+	}
+	else 
+	{
+		this->isWalled = isWalled;
 	}
 	std::cout << "Leave ground\n";
 	foot--;

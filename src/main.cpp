@@ -65,11 +65,11 @@ class MyContactListener : public b2ContactListener
 		}
 		if (platform != nullptr && pChar != nullptr)
 		{
-			pChar->leave_ground(isWalled);
 			if (isWalled)
 			{
 				isWalled = false;
 			}
+			pChar->leave_ground(isWalled);
 		}
 	}
 };
@@ -127,7 +127,7 @@ int main()
 			}
 		}
 		
-		character.update(jump_button, isWalled);
+		character.update(jump_button);
 		
 		window.clear();
 		character.draw(window);
