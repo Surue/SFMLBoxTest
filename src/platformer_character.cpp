@@ -44,7 +44,7 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	side_sensor.shape = &side_shape;
 	contactDataWall.contactDataType = ContactDataType::WALL_CHARACTER;
 	contactDataWall.data = this;
-	side_sensor.friction = 0.005f;
+	side_sensor.friction = 0.f;
 	side_sensor.userData = &contactDataWall;
 
 
@@ -105,14 +105,7 @@ void PlatformerCharacter::draw(sf::RenderWindow& window)
 
 void PlatformerCharacter::touch_ground(bool isWalled)
 {
-	if (isWalled)
-	{
-		this->isWalled = isWalled;
-	}
-	else
-	{
-		this->isWalled = isWalled;
-	}
+	this->isWalled = isWalled;
 	std::cout << "Touch ground\n";
 	foot++;
 }
