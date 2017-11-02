@@ -18,6 +18,7 @@ private:
 	int foot = 0;
 	int wallJumping_speed = 10000;
 	bool isWalled = false;
+	bool isAirWallJump = false;
 	b2Body* body;
 	sf::RectangleShape rect;
 	sf::Vector2f center_position = sf::Vector2f(400.f, 300.f);

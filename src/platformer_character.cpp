@@ -40,7 +40,7 @@ PlatformerCharacter::PlatformerCharacter(b2World & world)
 	side_sensor.isSensor = true;
 	std::cout << "size.x = " << size.x << "\n";
 	b2PolygonShape side_shape;
-	side_shape.SetAsBox(pixel2meter(size.x) / 1.8f, pixel2meter(1.0f) / 2.f);
+	side_shape.SetAsBox(pixel2meter(size.x) / 2.f, pixel2meter(1.0f) / 2.f);
 	side_sensor.shape = &side_shape;
 	contactDataWall.contactDataType = ContactDataType::WALL_CHARACTER;
 	contactDataWall.data = this;
@@ -59,40 +59,58 @@ PlatformerCharacter::~PlatformerCharacter()
 
 void PlatformerCharacter::update(bool jump_button)
 {
-
-	/* manage movements */
-	float move_axis = 0.0f;
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	if (isAirWallJump) 
 	{
-		move_axis += 1.0f;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		move_axis -= 1.0f;
-	}
-
-	body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
-
-	/* manage vertical mouvements if on the wall */
-	if (isWalled 
-		&& !jump_button 
-		&& (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)))
-	{
-		if (body->GetLinearVelocity().y > 0) {
-			body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, 0.01f));
+		body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, body->GetLinearVelocity().y));
+		if (body->GetLinearVelocity().x == 0 || (body->GetLinearVelocity().y == 0 && foot > 0)) {
+			isAirWallJump = false;
 		}
-		else 
+	}
+	else 
+	{
+		/* manage movements */
+		float move_axis = 0.0f;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		{
-			body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, body->GetLinearVelocity().y / 1.1f));
+			move_axis += 1.0f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			move_axis -= 1.0f;
+		}
+
+		body->SetLinearVelocity(b2Vec2(walk_speed*move_axis, body->GetLinearVelocity().y));
+
+		/* manage vertical mouvements if on the wall */
+		if (isWalled
+			&& !jump_button
+			&& (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)))
+		{
+			if (body->GetLinearVelocity().y > 0) {
+				body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, 0.01f));
+			}
+			else
+			{
+				body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, body->GetLinearVelocity().y / 1.1f));
+			}
+		}
+
+		/* manage jumps*/
+		if (jump_button && foot > 0)
+		{
+			if (!isWalled)
+			{
+				body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, -jump_speed));
+			}
+			else
+			{
+				body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x*(-1), -jump_speed));
+				isAirWallJump = true;
+			}
 		}
 	}
 
-	/* manage jumps*/
-	if (jump_button && foot > 0)
-	{
-		body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, -jump_speed));
-	}
 
 	center_position = meter2pixel(body->GetPosition());
 	rect.setPosition(center_position - size / 2.f);
@@ -106,20 +124,11 @@ void PlatformerCharacter::draw(sf::RenderWindow& window)
 void PlatformerCharacter::touch_ground(bool isWalled)
 {
 	this->isWalled = isWalled;
-	std::cout << "Touch ground\n";
 	foot++;
 }
 
 void PlatformerCharacter::leave_ground(bool isWalled)
 {
-	if (isWalled)
-	{
-		this->isWalled = isWalled;
-	}
-	else 
-	{
-		this->isWalled = isWalled;
-	}
-	std::cout << "Leave ground\n";
+	this->isWalled = isWalled;
 	foot--;
 }
